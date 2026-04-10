@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthed() && request.auth.uid == uid;
+    }
+
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /products/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /carts/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    match /events/{id} {
+      allow create: if isAuthed()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'type', 'createdAt']);
+      allow read, update, delete: if false;
+    }
+
+    match /orders/{id} {
+      allow read: if isAuthed() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /adminConfig/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /recoveryLogs/{id} {
+      allow read, write: if false;
+    }
+
+    match /promoCodes/{code} {
+      allow read: if isAuthed();
+      allow write: if false;
+    }
+
+    match /userConsents/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+  }
+}

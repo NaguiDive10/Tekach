@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "description": "Flux n8n portable : abandon → Recovery API → copie email. Définir dans n8n : RECOVERY_API_BASE_URL (sans slash final), N8N_WEBHOOK_SECRET ; optionnel OPTIONAL_SITE_ID pour le multi-boutiques.",
+    "env": {
+      "RECOVERY_API_BASE_URL": "Ex. https://api.tekach.example — utilisé tel quel, sans / à la fin.",
+      "N8N_WEBHOOK_SECRET": "Identique à la variable serveur Tekach.",
+      "OPTIONAL_SITE_ID": "Si défini, envoyé comme siteId dans le corps JSON (multi-tenant)."
+    }
+  },
+  "nodes": [
+    {
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 15 }]
+        }
+      }
+    },
+    {
+      "name": "NotifyAbandon",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.RECOVERY_API_BASE_URL + '/api/webhooks/n8n' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-n8n-secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" },
+            { "name": "X-Recovery-Api-Version", "value": "1" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({ apiVersion: '1', action: 'cart_abandoned', userId: $json.userId, exitStep: $json.exitStep, cartTotal: $json.cartTotal, contactEmail: $json.contactEmail, cartId: $json.cartId }, $env.OPTIONAL_SITE_ID && String($env.OPTIONAL_SITE_ID).trim() ? { siteId: String($env.OPTIONAL_SITE_ID).trim() } : {})) }}"
+      }
+    },
+    {
+      "name": "GenerateEmail",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.RECOVERY_API_BASE_URL + '/api/automation/email-copy' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-n8n-secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"contactEmail\": $json.contactEmail, \"items\": $json.items, \"checkoutUrl\": $json.checkoutUrl}"
+      }
+    }
+  ]
+}
