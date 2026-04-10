@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { CategoryMenu } from "@/components/layout/CategoryMenu";
 
 export function SiteHeader() {
   const { items } = useCart();
@@ -70,18 +71,15 @@ export function SiteHeader() {
       </div>
 
       <nav className="flex items-center gap-4 bg-[#232f3e] px-3 py-2 text-sm text-white sm:px-4">
-        <Link
-          href="/shop"
-          className="flex items-center gap-1 font-medium hover:text-[#febd69]"
-        >
-          <span className="text-base leading-none">☰</span>
-          Tout
-        </Link>
-        <Link href="/shop" className="hover:text-[#febd69]">
+        <CategoryMenu />
+        <Link href="/" className="hover:text-[#febd69]">
           Boutique
         </Link>
-        <Link href="/" className="hidden hover:text-[#febd69] sm:inline">
-          Accueil
+        <Link href="/tekach-ia" className="hover:text-[#febd69]">
+          Tekach IA
+        </Link>
+        <Link href="/demo" className="hidden hover:text-[#febd69] sm:inline">
+          Démo
         </Link>
         <Link
           href="/admin"

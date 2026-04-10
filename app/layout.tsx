@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tekach — E-commerce & agent IA",
+  title: "Tekach — Plateforme de relance e-commerce",
   description:
-    "Vitrine e-commerce avec relance email et appel vocal IA — tracking et récupération de paniers.",
+    "SDK d’ingestion, dashboard multi-tenant et boutique démo — relances email / voix et automations.",
 };
 
 export default function RootLayout({

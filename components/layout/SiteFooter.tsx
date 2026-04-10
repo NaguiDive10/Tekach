@@ -7,7 +7,10 @@ export function SiteFooter() {
         <p className="text-xs text-stone-500">
           © {new Date().getFullYear()} Tekach — Agent e-commerce omnicanal.
         </p>
-        <div className="flex gap-6 text-xs text-stone-600">
+        <div className="flex flex-wrap gap-6 text-xs text-stone-600">
+          <Link href="/tekach-ia" className="hover:text-stone-900">
+            Tekach IA
+          </Link>
           <Link href="/legal/confidentialite" className="hover:text-stone-900">
             Confidentialité & RGPD
           </Link>

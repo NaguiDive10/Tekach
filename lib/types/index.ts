@@ -5,6 +5,10 @@ export interface Category {
   name: string;
   slug: string;
   order: number;
+  /** Visuel pour les pages vitrine (URL absolue ou chemin /public) */
+  image?: string;
+  /** Sous-titre court (liste catégories, SEO) */
+  description?: string;
 }
 
 export interface ProductVariant {

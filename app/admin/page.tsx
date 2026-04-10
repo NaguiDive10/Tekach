@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIdToken } from "@/hooks/useIdToken";
 import {
@@ -124,7 +125,15 @@ export default function AdminPage() {
         <h1 className="text-2xl font-light text-stone-900">Admin Tekach</h1>
         <p className="mt-2 text-sm text-stone-500">
           Grille type bento — ventes, abandons, logs agent, configuration
-          relance.
+          relance. Les événements SDK (multi-tenant) :{" "}
+          <Link href="/admin/dashboard" className="text-[#c45500] underline">
+            Dashboard événements
+          </Link>
+          {" · "}
+          <Link href="/tekach-ia" className="text-[#c45500] underline">
+            Tekach IA
+          </Link>
+          .
         </p>
       </div>
 

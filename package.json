@@ -2,9 +2,13 @@
   "name": "tekach",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "npm run build:sdk && next build --turbopack",
+    "build:sdk": "esbuild packages/sdk/src/browser.ts --bundle --format=iife --outfile=public/sdk/v1.js --minify --legal-comments=none",
     "start": "next start",
     "lint": "eslint"
   },
@@ -27,6 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "esbuild": "^0.25.5",
     "eslint": "^9",
     "eslint-config-next": "15.5.15",
     "tailwindcss": "^4",

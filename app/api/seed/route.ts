@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { SEED_CATEGORIES, SEED_PRODUCTS } from "@/lib/seed-data";
 import { DEFAULT_ADMIN_CONFIG } from "@/lib/config";
+import { buildDefaultTenantDocs } from "@/lib/tenants/seed-default";
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-seed-secret");
@@ -17,11 +18,8 @@ export async function POST(req: NextRequest) {
   }
   const batch = db.batch();
   for (const c of SEED_CATEGORIES) {
-    batch.set(db.collection("categories").doc(c.id), {
-      name: c.name,
-      slug: c.slug,
-      order: c.order,
-    });
+    const { id, ...catFields } = c;
+    batch.set(db.collection("categories").doc(id), catFields);
   }
   for (const p of SEED_PRODUCTS) {
     const { id, ...rest } = p;
@@ -30,6 +28,16 @@ export async function POST(req: NextRequest) {
   batch.set(db.collection("adminConfig").doc("global"), DEFAULT_ADMIN_CONFIG, {
     merge: true,
   });
+  const { tenantId, tenant, publishableKey, keyDoc } = buildDefaultTenantDocs();
+  batch.set(db.collection("tenants").doc(tenantId), tenant, { merge: true });
+  batch.set(db.collection("publishableKeys").doc(publishableKey), keyDoc, {
+    merge: true,
+  });
   await batch.commit();
-  return NextResponse.json({ ok: true, seeded: SEED_PRODUCTS.length });
+  return NextResponse.json({
+    ok: true,
+    seeded: SEED_PRODUCTS.length,
+    tenantId,
+    publishableKey,
+  });
 }
